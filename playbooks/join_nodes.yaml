@@ -1,0 +1,8 @@
+- hosts: master
+  tasks:
+  roles:
+  - token_create
+
+- hosts: nodes
+  roles:
+  - join_node

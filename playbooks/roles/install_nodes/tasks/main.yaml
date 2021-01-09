@@ -1,0 +1,63 @@
+- name: install docker and apt-transport-https
+  apt:
+    name: "{{item}}"
+    update_cache: yes
+  with_items:
+    - docker.io
+    - apt-transport-https
+
+    
+- name: enable docker
+  systemd:
+    name: docker.io
+    enabled: yes
+    daemon_reload: yes
+  ignore_errors: True ## poor mans idempotence TODO
+
+- name: start docker
+  systemd:
+    name: docker.io
+    state: started
+  ignore_errors: True ## poor mans idempotence TODO
+
+
+- name: Turn off swap
+  shell: |
+    swapon -s
+    swapoff -a
+
+- name: Remove Swap entry from /etc/fstab.
+  lineinfile:
+    dest: /etc/fstab
+    regexp: swap
+    state: absent
+
+
+- name: Add an apt signing key for Kubernetes
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+
+
+### apt_repository failed
+#~ - name: Adding apt repository for Kubernetes
+  #~ apt_repository:
+    #~ repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+    #~ state: present
+    #~ filename: kubernetes.list
+
+### workaround
+- name: Adding apt repository for Kubernetes
+  lineinfile:
+    path: /etc/apt/sources.list.d/kubernetes.list
+    line: "deb https://apt.kubernetes.io/ kubernetes-xenial main"
+    create: yes
+
+
+- name: install kubelet and kubeadm 
+  apt:
+    name: "{{item}}"
+    update_cache: yes
+  with_items:
+    - kubeadm
+    - kubelet

@@ -1,0 +1,20 @@
+---
+- hosts: all
+  become: true
+  roles:
+  - install_nodes
+
+- hosts: master
+  become: true
+  roles:
+  - setup_cluster
+
+- import_playbook: join_nodes.yaml
+
+
+#~ - name: Create a k8s namespace
+  #~ community.kubernetes.k8s:
+    #~ name: testing
+    #~ api_version: v1
+    #~ kind: Namespace
+    #~ state: present

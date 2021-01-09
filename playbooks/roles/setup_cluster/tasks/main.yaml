@@ -1,0 +1,20 @@
+- name: install kubectl
+  apt:
+    name: kubectl
+
+
+- name: kubeadm init on {{ inventory_hostname }}
+  shell: |
+    kubeadm init --pod-network-cidr=10.244.10.0/16 --apiserver-advertise-address={{ inventory_hostname }}
+  ignore_errors: True ## poor mans idempotence
+
+
+## [Step 2.5: Setup the container networking provider and the network policy engine using the below code. ](https://kubernetes.io/blog/2019/03/15/kubernetes-setup-using-ansible-and-vagrant/#step-2-5-setup-the-container-networking-provider-and-the-network-policy-engine-using-the-below-code)
+
+#~ TODO export KUBECONFIG=/etc/kubernetes/admin.conf ?
+
+- name: Setup the container networking provider and the network policy engine
+  shell: |
+    export KUBECONFIG=/etc/kubernetes/admin.conf
+    kubectl apply -f {{ networking_provider_url }}
+    
