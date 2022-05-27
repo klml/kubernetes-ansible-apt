@@ -1,5 +1,4 @@
 - hosts: control_plane
-  tasks:
   roles:
   - token_create
 
