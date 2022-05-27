@@ -1,6 +1,6 @@
 # kubernetes-ansible-apt
 
-ansible playbook to setup a kubernetes cluster with one master and worker nodes using apt based nodes
+ansible playbook to setup a kubernetes cluster with one control_plane node and worker_nodes using apt based nodes.
 
 This is inspired by [kubernetes-and-ansible](https://github.com/learnitguide/kubernetes-and-ansible) (for centos) and [Kubernetes Setup Using Ansible and Vagrant](https://kubernetes.io/blog/2019/03/15/kubernetes-setup-using-ansible-and-vagrant/)
 

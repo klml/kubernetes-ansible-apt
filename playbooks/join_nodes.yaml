@@ -1,8 +1,8 @@
-- hosts: master
+- hosts: control_plane
   tasks:
   roles:
   - token_create
 
-- hosts: nodes
+- hosts: worker_nodes
   roles:
   - join_node

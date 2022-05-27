@@ -2,9 +2,9 @@
 crio_VERSION= 1.23
 crio_OS= xUbuntu_20.04
 
-[master]
-1.2.3.101
+[control_plane]
+ 1.2.3.101
 
-[nodes]
+[worker_nodes]
 1.2.3.102
 1.2.3.103
