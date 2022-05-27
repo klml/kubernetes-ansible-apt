@@ -1,24 +1,7 @@
-- name: install docker and apt-transport-https
+- name: install apt-transport-https
   apt:
-    name: "{{item}}"
+    name: ['apt-transport-https', 'ca-certificates']
     update_cache: yes
-  with_items:
-    - docker.io
-    - apt-transport-https
-
-    
-- name: enable docker
-  systemd:
-    name: docker.io
-    enabled: yes
-    daemon_reload: yes
-  ignore_errors: True ## poor mans idempotence TODO
-
-- name: start docker
-  systemd:
-    name: docker.io
-    state: started
-  ignore_errors: True ## poor mans idempotence TODO
 
 
 - name: Turn off swap
@@ -33,31 +16,64 @@
     state: absent
 
 
-- name: Add an apt signing key for Kubernetes
+- name: Add an apt signing key for Kubernetes and CRI-o
   apt_key:
-    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    url: "{{ item }}"
     state: present
-
-
-### apt_repository failed
-#~ - name: Adding apt repository for Kubernetes
-  #~ apt_repository:
-    #~ repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
-    #~ state: present
-    #~ filename: kubernetes.list
-
-### workaround
-- name: Adding apt repository for Kubernetes
-  lineinfile:
-    path: /etc/apt/sources.list.d/kubernetes.list
-    line: "deb https://apt.kubernetes.io/ kubernetes-xenial main"
-    create: yes
-
-
-- name: install kubelet and kubeadm 
-  apt:
-    name: "{{item}}"
-    update_cache: yes
   with_items:
-    - kubeadm
-    - kubelet
+    - https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    - https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:1.23/xUbuntu_20.04/Release.key
+    - https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_20.04/Release.key
+
+
+- name: Adding apt repository for Kubernetes
+  apt_repository:
+    repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+    filename: kubernetes.list
+
+# from https://github.com/cri-o/cri-o/blob/main/install.md#apt-based-operating-systems
+- name: Adding apt repository for CRIO {{crio_OS}}
+  apt_repository:
+    repo: deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_OS }}/ /
+    state: present
+    filename: xubuntu.list
+
+
+- name: Adding apt repository for CRI-O {{ crio_VERSION }}
+  apt_repository:
+    repo: deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_VERSION }}/{{ crio_OS }}/ /
+    state: present
+    filename: crio.list
+
+
+- name: install kubelet and kubeadm
+  apt:
+    name: ['kubeadm', 'kubelet']
+    update_cache: yes
+
+
+- name: install crio
+  apt:
+    name: ['cri-o', 'cri-o-runc']
+    update_cache: yes
+
+
+- name: Make sure a service unit is running
+  ansible.builtin.systemd:
+    name: crio.service
+    state: started
+    enabled: yes
+
+
+## TODO REMOVE
+- name: WORKAROUND [kubeadm complains about bridge-nf-call and ip_forward if not using docker runtime](https://github.com/kubernetes/kubeadm/issues/1062)
+  block:
+  - name: br_netfilter
+    community.general.modprobe:
+      name: br_netfilter
+      state: present
+
+  - name: /proc/sys/net/ipv4/ip_forward set 1
+    shell: |
+      echo '1' > /proc/sys/net/ipv4/ip_forward

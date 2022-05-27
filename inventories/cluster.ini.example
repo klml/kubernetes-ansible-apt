@@ -1,3 +1,7 @@
+[all:vars]
+crio_VERSION= 1.23
+crio_OS= xUbuntu_20.04
+
 [master]
 1.2.3.101
 
