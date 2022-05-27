@@ -6,10 +6,7 @@
     kubeadm token create --print-join-command
   register: join_command
 
-
-- name: Copy join command to local file
-  local_action:
-    module: copy
-    content: "{{ join_command.stdout_lines[0] }}"
-    dest: "./join-command.sh"
-## TODO use tmp file
+- name: Add dummy host to carry join_command
+  add_host:
+    name:   "join_command_dummy_host"
+    join_command_sh:  "{{ join_command.stdout }}"

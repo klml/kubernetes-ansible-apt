@@ -1,12 +1,27 @@
 # [Step 3.2: Join the nodes to the Kubernetes cluster](https://kubernetes.io/blog/2019/03/15/kubernetes-setup-using-ansible-and-vagrant/#step-3-2-join-the-nodes-to-the-kubernetes-cluster-using-below-code)
 
-- name: Copy the join command to server location
-  copy:
-    src: ./join-command.sh
-    dest: /tmp/join-command.sh
-    mode: 0777
+- name: Create temporary join command file
+  tempfile:
+    state: file
+    suffix: _join_command.sh
+  register: tmp_join_command_sh
 
-- name: Join the node to cluster
+
+- name: Copy the join command to {{ tmp_join_command_sh.path }}
+  copy:
+    dest: "{{ tmp_join_command_sh.path }}"
+    content: "{{ hostvars['join_command_dummy_host']['join_command_sh'] }}"
+    mode: 0700
+
+
+- name: Join the node to cluster with {{ tmp_join_command_sh.path }}
   become: true
   shell: |
-    sh /tmp/join-command.sh
+    sh {{ tmp_join_command_sh.path }}
+
+
+- name: clean up {{ tmp_join_command_sh.path }}
+  file:
+    path: "{{ tmp_join_command_sh.path }}"
+    state: absent
+  when: tmp_join_command_sh.path is defined
