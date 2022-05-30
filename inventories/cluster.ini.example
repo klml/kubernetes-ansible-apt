@@ -1,7 +1,3 @@
-[all:vars]
-crio_VERSION= 1.23
-crio_OS= xUbuntu_20.04
-
 [control_plane]
  1.2.3.101
 
