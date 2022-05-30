@@ -10,3 +10,8 @@
   - setup_cluster
 
 - import_playbook: join_nodes.yaml
+
+- hosts: control_plane
+  become: true
+  roles:
+  - setup_network

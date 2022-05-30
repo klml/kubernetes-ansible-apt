@@ -1,0 +1,11 @@
+# cant use [k8s](https://docs.ansible.com/ansible/devel/collections/community/kubernetes/k8s_module.html) has no native handling for urls
+- name: install kubectl
+  apt:
+    name: kubectl
+
+
+- name: Setup the container networking provider and the network policy engine
+  shell: |
+    kubectl apply -f {{ networking_provider_url }}
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
