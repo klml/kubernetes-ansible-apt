@@ -6,7 +6,7 @@
     kubeadm token create --print-join-command
   register: join_command
 
-- name: Add dummy host to carry join_command
+- name: Add dummy host to carry join_command to role join_node
   add_host:
     name:   "join_command_dummy_host"
     join_command_sh:  "{{ join_command.stdout }}"
