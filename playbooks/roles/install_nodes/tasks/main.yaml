@@ -48,15 +48,9 @@
     filename: crio.list
 
 
-- name: install kubelet and kubeadm
+- name: install kubelet, kubeadm and crio
   apt:
-    name: ['kubeadm', 'kubelet']
-    update_cache: yes
-
-
-- name: install crio
-  apt:
-    name: ['cri-o', 'cri-o-runc']
+    name: ['kubeadm', 'kubelet', 'cri-o', 'cri-o-runc']
     update_cache: yes
 
 
