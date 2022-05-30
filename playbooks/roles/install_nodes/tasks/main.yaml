@@ -61,14 +61,26 @@
     enabled: yes
 
 
-## TODO REMOVE
-- name: WORKAROUND [kubeadm complains about bridge-nf-call and ip_forward if not using docker runtime](https://github.com/kubernetes/kubeadm/issues/1062)
+# https://kubernetes.io/docs/setup/production-environment/container-runtimes/#forwarding-ipv4-and-letting-iptables-see-bridged-traffic
+- name: Forwarding IPv4 and letting iptables see bridged traffic
   block:
-  - name: br_netfilter
+  - name: load kernel modules br_netfilter at boot time
+    blockinfile:
+      path: /etc/modules-load.d/k8s.conf
+      block: |
+       br_netfilter
+      create: yes
+
+
+  - name: modprobe br_netfilter
     community.general.modprobe:
       name: br_netfilter
       state: present
 
-  - name: /proc/sys/net/ipv4/ip_forward set 1
-    shell: |
-      echo '1' > /proc/sys/net/ipv4/ip_forward
+
+  - ansible.posix.sysctl:
+      name: net.ipv4.ip_forward
+      value: '1'
+      sysctl_set: yes
+      state: present
+      reload: yes
