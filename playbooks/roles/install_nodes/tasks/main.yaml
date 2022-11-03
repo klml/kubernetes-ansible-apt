@@ -23,8 +23,8 @@
     state: present
   with_items:
     - https://packages.cloud.google.com/apt/doc/apt-key.gpg
-    - https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:1.23/xUbuntu_20.04/Release.key
-    - https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_20.04/Release.key
+    - https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:{{ crio_VERSION }}/{{ crio_OS }}/Release.key
+    - https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_OS }}/Release.key
 
 
 - name: Adding apt repository for Kubernetes
