@@ -2,5 +2,5 @@
 ansible_user: root
 ansible_python_interpreter: /usr/bin/python3
 networking_provider_url: https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-crio_VERSION: 1.26
+crio_VERSION: 1.28
 crio_OS: xUbuntu_22.04

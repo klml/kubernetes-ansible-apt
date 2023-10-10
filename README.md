@@ -21,3 +21,12 @@ ansible-playbook playbooks/install_cluster.yaml -i inventories/cluster.ini
 ```
 
 
+## storage
+
+https://github.com/hetznercloud/csi-driver/blob/main/docs/kubernetes/README.md#getting-started
+
+
+kubectl apply -f https://raw.githubusercontent.com/hetznercloud/csi-driver/v2.5.1/deploy/kubernetes/hcloud-csi.yml
+kubectl apply -f hcloud-csi-driver.md
+
+kubectl -n kube-system rollout restart deployment coredns
